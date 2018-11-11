@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode";
 export default {
   name: "login",
   components: {},
@@ -34,7 +35,7 @@ export default {
     return {
       loginUser: {
         email: "",
-        password: "",
+        password: ""
       },
       rules: {
         email: [
@@ -62,25 +63,38 @@ export default {
     };
   },
   methods: {
-      submitForm (formName) {
-            this.$refs[formName].validate((valid) => {
-            if (valid) {
-                this.$axios.post('/api/users/login', this.loginUser)
-                .then(res => {
-                    console.log(res);
-                    //token
-                    const {token} = res.data;
-                    //存储到ls
-                    localStorage.setItem('eleToken',token);
-                    this.$router.push('/index');
-                    })
-                } 
-            });
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$axios.post("/api/users/login", this.loginUser).then(res => {
+            console.log(res);
+            //token
+            const { token } = res.data;
+            //存储到ls
+            localStorage.setItem("eleToken", token);
 
-        },
-      }
-  
+            // 解析token
+            const decode = jwt_decode(token);
+            console.log(decode);
 
+            // token存储到vuex中
+            this.$store.dispatch("setAuthenticated", !this.isEmpty(decode));
+            this.$store.dispatch("setUser", decode);
+            this.$router.push("/index");
+          });
+        }
+      });
+    },
+
+    isEmpty(value) {
+      return (
+        value === undefined ||
+        value === null ||
+        (typeof value === "object" && Object.keys(value).length === 0) ||
+        (typeof value === "string" && value.trim().length === 0)
+      );
+    }
+  }
 };
 </script>
 
