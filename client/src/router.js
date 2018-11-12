@@ -4,6 +4,8 @@ import Index from './views/index.vue'
 import Register from './views/Register.vue'
 import NotFound from './views/404.vue'
 import Login from './views/Login.vue'
+import Home from './views/Home.vue'
+import InfoShow from './views/InfoShow.vue'
 
 Vue.use(Router)
 
@@ -16,33 +18,45 @@ const router = new Router({
       redirect: '/index',
     },
     {
-      path:"/index",
-      name:'index',
-      component:Index
+      path: "/index",
+      name: 'index',
+      component: Index,
+      children: [
+      {
+        path: '',
+        component: Home
+      },
+      {
+        path: '/home',
+        component: Home
+      }, {
+        path: '/infoshow',
+        component: InfoShow
+      }]
     },
     {
-      path:"/register",
-      name:'register',
-      component:Register
+      path: "/register",
+      name: 'register',
+      component: Register
     },
     {
-      path:"/login",
-      name:'login',
-      component:Login
+      path: "/login",
+      name: 'login',
+      component: Login
     },
     {
-      path:"*",
-      name:'/404',
-      component:NotFound
+      path: "*",
+      name: '/404',
+      component: NotFound
     },
-    
+
   ]
 })
 
 //路由守卫
-router.beforeEach((to,from,next) => {
+router.beforeEach((to, from, next) => {
   const isLogin = localStorage.eleToken ? true : false;
-  if(to.path == '/login' || toolbar.path == '/register' ) {
+  if (to.path == '/login' || toolbar.path == '/register') {
     next();
   } else {
     isLogin ? next() : next('/login');
