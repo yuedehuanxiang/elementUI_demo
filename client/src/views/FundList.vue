@@ -46,7 +46,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <Dialog-fund :dialog="dialog" @update="getProfile"></Dialog-fund>
+    <Dialog-fund :formData="formData" :dialog="dialog" @update="getProfile"></Dialog-fund>
   </div>
 </template>
 
@@ -59,9 +59,20 @@ export default {
   },
   data() {
     return {
+      formData: {
+        type: "",
+        describe: "",
+        income: "",
+        expend: "",
+        cash: "",
+        remark: "",
+        id: ""
+      },
       tableData: [],
       dialog: {
-        show: false
+        show: false,
+        title: "",
+        option: "edit"
       }
     };
   },
@@ -70,13 +81,44 @@ export default {
   },
   methods: {
     handleAdd() {
-      this.dialog.show = true;
+      // 添加
+      this.dialog = {
+        show: true,
+        title: "添加资金信息",
+        option: "add"
+      };
+      this.formData = {
+        type: "",
+        describe: "",
+        income: "",
+        expend: "",
+        cash: "",
+        remark: "",
+        id: ""
+      };
     },
     handleEdit(index, row) {
-      console.log(123);
+      // 编辑
+      this.dialog = {
+        show: true,
+        title: "修改资金信息",
+        option: "edit"
+      };
+      this.formData = {
+        type: row.type,
+        describe: row.describe,
+        income: row.income,
+        expend: row.expend,
+        cash: row.cash,
+        remark: row.remark,
+        id: row._id
+      };
     },
     handleDelete(index, row) {
-      console.log(456);
+      this.$axios.delete(`/api/profiles/delete/${row._id}`).then(res => {
+        this.$message("删除成功！");
+        this.getProfile();
+      });
     },
     getProfile() {
       //获取表格数据;

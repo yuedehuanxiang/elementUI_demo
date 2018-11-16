@@ -1,6 +1,6 @@
 <template>
   <div class="dialog">
-    <el-dialog title="添加资金信息" :visible.sync="dialog.show" :close-on-click-modal="false" :close-on-press-escape="false" :modal-append-to-body="false">
+    <el-dialog :title="dialog.title" :visible.sync="dialog.show" :close-on-click-modal="false" :close-on-press-escape="false" :modal-append-to-body="false">
       <div class="form">
         <el-form ref="form" :model="formData" :rules="form_rules" label-width="120px" sytle="margin:10px;width:auto">
           <el-form-item label="收支类型:">
@@ -37,17 +37,12 @@
 <script>
 export default {
   name: "dialogfund",
+  props: {
+    dialog: Object,
+    formData: Object
+  },
   data() {
     return {
-      formData: {
-        type: "",
-        describe: "",
-        income: "",
-        expend: "",
-        cash: "",
-        remark: "",
-        id: ""
-      },
       form_rules: {
         describe: [
           { required: true, message: "收支描述不能为空", trigger: "blur" }
@@ -70,7 +65,9 @@ export default {
     onSubmit(form) {
       this.$refs[form].validate(valid => {
         if (valid) {
-          this.$axios.post("/api/profiles/add", this.formData).then(res => {
+          const url =
+            this.dialog.option == "add" ? "add" : `edit/${this.formData.id}`;
+          this.$axios.post(`/api/profiles/${url}`, this.formData).then(res => {
             //添加成功
             this.$message({
               message: "数据添加成功",
@@ -84,9 +81,6 @@ export default {
         }
       });
     }
-  },
-  props: {
-    dialog: Object
   }
 };
 </script>
