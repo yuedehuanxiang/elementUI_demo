@@ -14,7 +14,7 @@
           <el-button type="primary" size="small" icon="search" @click="handleSearch()">筛选</el-button>
         </el-form-item>
         <el-form-item class="btnRight">
-          <el-button type="primary" size="small" icon="view" @click="handleAdd()">添加</el-button>
+          <el-button type="primary" size="small" icon="view" v-if="user.identity == 'manager'" @click="handleAdd()">添加</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -49,7 +49,7 @@
         </el-table-column>
         <el-table-column prop="remark" label="备注" align='center' width="180">
         </el-table-column>
-        <el-table-column prop="operation" label="操作" align='center' fixed="right" width="320">
+        <el-table-column prop="operation" label="操作" align='center' v-if="user.identity == 'manager'" fixed="right" width="320">
           <template slot-scope="scope">
             <el-button type="warning" icon="edit" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button icon="delete" size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -109,6 +109,11 @@ export default {
         option: "edit"
       }
     };
+  },
+  computed: {
+    user() {
+      return this.$store.getters.user;
+    }
   },
   created() {
     this.getProfile();
